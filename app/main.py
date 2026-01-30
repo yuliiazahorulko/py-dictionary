@@ -6,14 +6,17 @@ class Dictionary:
         self.dictionary = [None] * self.capacity
 
     def calculation_algorithm(self, key: str | int, value: str | int) -> None:
-        load_factor_index = hash(key) % self.capacity
-        if 0 <= load_factor_index < self.capacity:
-            index = load_factor_index
+        temp_not_none = [i for i in self.dictionary if i is not None]
+        for d_list in temp_not_none:
+            if key == d_list[0]:
+                d_list[2] = value
+                return None
+        index = hash(key) % self.capacity
         if self.size <= self.threshold and self.dictionary[index] is None:
             self.dictionary[index] = [key, hash(key), value]
             self.size += 1
         elif self.dictionary[index] is not None:
-            if self.dictionary[index][1] == hash(key):
+            if self.dictionary[index][0] == key:
                 self.dictionary[index][2] = value
             else:
                 while True:
@@ -47,14 +50,14 @@ class Dictionary:
             self.calculation_algorithm(key, value)
 
     def __getitem__(self, item: str | int) -> None:
-        try:
-            if item in self.dictionary:
-                return self.dictionary[item][1]
-        except KeyError:
+        not_empty = [k for k in self.dictionary if k is not None]
+        if item in [k[0] for k in self.dictionary if k is not None]:
+            return [i[2] for i in not_empty if i[0] == item][0]
+        else:
             raise KeyError("Key outside the dictionary!")
 
     def __len__(self) -> int:
-        return self.size
+        return len([i for i in self.dictionary if i is not None])
 
     def __repr__(self) -> str:
         return f"{{{[key_value for key_value in self.dictionary]}}}"
